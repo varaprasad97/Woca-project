@@ -2,18 +2,20 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    // You can replace this with your actual MongoDB URI
-    // For local development: mongodb://localhost:27017/woca
-    // For MongoDB Atlas: mongodb+srv://username:password@cluster.mongodb.net/woca
-    const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/woca';
-    
-    const conn = await mongoose.connect(mongoURI);
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI is missing');
+    }
+
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error('MongoDB connection error:', error.message);
+    console.error('MongoDB connection failed:', error.message);
     process.exit(1);
   }
 };
 
-module.exports = connectDB; 
+module.exports = connectDB;
